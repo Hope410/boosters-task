@@ -1,21 +1,19 @@
-const { exec } = require('child_process');
+const util = require('util');
+const execFile = util.promisify(require('child_process').execFile);
 
-module.exports = (metric, filePath) => {
-	return new Promise((resolve, reject) => {
-		exec(`./metrics/${metric} ans.csv ${filePath} 0`, (error, stdout, stderr) => {
-		  if (error) {
-		  	reject(error);
-		  }
+module.exports = async (metric, filePath) => {
+  const { stdout, stderr, error } = 
+  	await execFile(`./metrics/${metric}`, ['ans.csv', filePath, 0]);
+	
+	if (error) {
+		throw error;
+	}
 
-		  if (stdout) {
-				const [ status, result ] = stdout.toString().split(':');
+	const [ status, result ] = stdout.toString().split(':');
 
-				if (status === 'ok') {
-					resolve(parseFloat(result));
-				} else {
-					reject(result);
-				}
-		  }
-		});
-	})
+	if (status === 'ok') {
+		return result;
+	} else {
+		throw result;
+	}
 }

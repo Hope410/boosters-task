@@ -71,15 +71,14 @@
 						this.mape = data.mape;
 						this.gotResults = true;
 					} catch(e) {
-						alert(
-							'Произошла ошибка! ' + 
-							!e.message 
-								? e
-								: e.response
-									? e.response.data
-									: ''
-						);
 						console.error(e);
+
+						this.mae = 0;
+						this.mape = 0;
+						this.gotResults = false;
+						
+						alert('Произошла ошибка! ' + 
+							e.message ? 'Не удалось загрузить файлы.': e);
 					}
 				}
 			}
