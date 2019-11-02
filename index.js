@@ -8,8 +8,8 @@ const spawnMetric = require('./spawnMetric');
 const app = express();
 
 app.use(fileUpload({
-    useTempFiles : true,
-    tempFileDir : 'uploaded/'
+	useTempFiles : true,
+	tempFileDir : 'uploaded/'
 }));
 
 app.use(bodyParser.urlencoded({ extended: false }))
