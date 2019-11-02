@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Test</title>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<style>
+		#app {
+			display: flex;
+	    flex-direction: column;
+	    align-items: center;
+		}
+
+		.content {
+			border: 1px solid;
+	    padding: 24px;
+	    border-radius: 8px;
+		}
+
+		.metrics {
+			margin-top: 16px;
+		}
+
+		input[type=submit] {
+			width: 100%;
+    	margin-top: 8px;
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<div class="content">
+			<div class="inputs">
+				<div class="file">
+					CSV-файл: <input type="file" @change="onChangeFileInput">
+				</div>
+				<input type="submit" @click="sendFile">
+			</div>
+			<div class="metrics" v-if="gotResults">
+				<div class="metric">MAE: {{ mae }}</div>
+				<div class="metric">MAPE: {{ mape }}</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		new Vue({
+			el: '#app',
+			data: {
+				csv_file: null,
+				gotResults: false,
+				mae: 0,
+				mape: 0
+			},
+			methods: {
+				onChangeFileInput(e) {
+					this.csv_file = e.target.files[0];
+				},
+				async sendFile() {
+					try {
+						if (!this.csv_file) {
+							throw 'Вы еще не загрузили файл!';
+						}
+
+						const formData = new FormData();
+						formData.append('csv_file', this.csv_file);
+
+						const { data } = await axios.post('/metrics', formData);
+
+						this.mae = data.mae;
+						this.mape = data.mape;
+						this.gotResults = true;
+					} catch(e) {
+						alert(
+							'Произошла ошибка! ' + 
+							!e.message 
+								? e
+								: e.response
+									? e.response.data
+									: ''
+						);
+						console.error(e);
+					}
+				}
+			}
+		})
+	</script>
+</body>
+</html>
